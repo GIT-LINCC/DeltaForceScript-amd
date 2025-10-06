@@ -42,6 +42,7 @@ class MonitorWindow(QMainWindow):
         self.verify_interval = 0.1  # 确认按钮点击间隔（秒）
         self.ocr_interval = 0.95  # OCR识别间隔（time >= 5）（秒）
         self.continue_after_complete = True  # 任务完成后继续运行
+        self.click_refresh_at_3s = False  # 3秒时点击刷新按钮
         
         self.init_ui()
         
@@ -246,6 +247,25 @@ class MonitorWindow(QMainWindow):
         continue_layout.addStretch()
         config_layout.addLayout(continue_layout)
         
+        # 3秒时点击刷新选项
+        refresh_layout = QHBoxLayout()
+        self.refresh_checkbox = QCheckBox("剩余3秒时点击刷新")
+        self.refresh_checkbox.setFont(QFont("微软雅黑", 10))
+        self.refresh_checkbox.setChecked(self.click_refresh_at_3s)
+        self.refresh_checkbox.stateChanged.connect(self.on_refresh_changed)
+        self.refresh_checkbox.setStyleSheet("""
+            QCheckBox {
+                padding: 5px;
+            }
+            QCheckBox::indicator {
+                width: 18px;
+                height: 18px;
+            }
+        """)
+        refresh_layout.addWidget(self.refresh_checkbox)
+        refresh_layout.addStretch()
+        config_layout.addLayout(refresh_layout)
+        
         main_layout.addWidget(config_group)
         
         # ========== 日志区域 ==========
@@ -430,6 +450,12 @@ class MonitorWindow(QMainWindow):
         status = "继续运行" if self.continue_after_complete else "停止"
         self.add_log(f"⚙️ 任务完成后将: {status}")
     
+    def on_refresh_changed(self, state):
+        """3秒时点击刷新选项变更"""
+        self.click_refresh_at_3s = (state == 2)  # Qt.CheckState.Checked = 2
+        status = "启用" if self.click_refresh_at_3s else "禁用"
+        self.add_log(f"⚙️ 3秒时点击刷新: {status}")
+    
     def get_config(self):
         """获取当前配置"""
         return {
@@ -438,7 +464,8 @@ class MonitorWindow(QMainWindow):
             'buy_interval': self.buy_interval,
             'verify_interval': self.verify_interval,
             'ocr_interval': self.ocr_interval,
-            'continue_after_complete': self.continue_after_complete
+            'continue_after_complete': self.continue_after_complete,
+            'click_refresh_at_3s': self.click_refresh_at_3s
         }
     
     def increment_clicks(self):
