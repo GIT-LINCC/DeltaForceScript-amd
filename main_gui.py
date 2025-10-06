@@ -155,8 +155,8 @@ class ScriptThread(QThread):
                             self.status_updated.emit(f"确认按钮识别结果: {verify}")
 
                         self.status_updated.emit("等待刷新...")
-                        time.sleep(0.5)
-                        click_region_center(refresh_region, interval=0.5)
+                        time.sleep(1.5)
+                        click_region_center(refresh_region)
                         # 检查三角币是否变化
                         now_money = self.ocr_region(money_region)
                         now_money = extract_and_merge_digits(now_money)

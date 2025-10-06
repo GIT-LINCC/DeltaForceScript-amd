@@ -105,7 +105,7 @@ class MonitorWindow(QMainWindow):
                 font-weight: bold;
                 border: 2px solid #9C27B0;
                 border-radius: 5px;
-                margin-top: 10px;
+                margin-top: 0px;
                 padding-top: 10px;
             }
         """)
@@ -130,7 +130,7 @@ class MonitorWindow(QMainWindow):
                 font-weight: bold;
                 border: 2px solid #FF5722;
                 border-radius: 5px;
-                margin-top: 10px;
+                margin-top: 0px;
                 padding-top: 10px;
             }
         """)
@@ -256,7 +256,7 @@ class MonitorWindow(QMainWindow):
                 font-weight: bold;
                 border: 2px solid #795548;
                 border-radius: 5px;
-                margin-top: 10px;
+                margin-top: 0px;
                 padding-top: 10px;
             }
         """)
