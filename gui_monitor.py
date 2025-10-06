@@ -212,7 +212,7 @@ class MonitorWindow(QMainWindow):
         
         # OCR识别间隔
         ocr_interval_layout = QHBoxLayout()
-        ocr_interval_label = QLabel("OCR识别间隔(t>4s):")
+        ocr_interval_label = QLabel("OCR间隔(t>5s):")
         ocr_interval_label.setFont(QFont("微软雅黑", 10))
         ocr_interval_label.setFixedWidth(120)
         self.ocr_interval_spin = QDoubleSpinBox()

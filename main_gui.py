@@ -118,6 +118,7 @@ class ScriptThread(QThread):
             pattern = re.compile(r'(\d+)\s*分\s*(\d+)\s*秒')
             
             self.status_updated.emit("监控中...")
+            refreshed = False  # 标记是否刚刚点击过刷新
             click_region_center(refresh_region)
             while self.is_running:
                 # 暂停时等待
@@ -131,9 +132,10 @@ class ScriptThread(QThread):
                     # 更新时间显示
                     self.timer_updated.emit(str(minutes), str(seconds))
                     # 剩余时间到 0:03 时点击刷新（如果启用）
-                    if minutes == 0 and seconds == 3 and self.config['click_refresh_at_3s']:
+                    if minutes == 0 and seconds == 3 and self.config['click_refresh_at_3s'] and not refreshed:
                         self.status_updated.emit("🔄 点击刷新...")
-                        click_region_center(refresh_region, interval=0.9)
+                        click_region_center(refresh_region)
+                        refreshed = True
                     # 剩余时间到 0:01 时执行点击
                     if minutes == 0 and seconds == 1:
                         self.status_updated.emit("准备点击...")
@@ -172,12 +174,13 @@ class ScriptThread(QThread):
                             self.task_completed.emit()
                             break
                         else:
+                            refreshed = False
                             self.status_updated.emit("继续监控中...")
                     else:
-                        if minutes > 0 or seconds > 4:
+                        if minutes > 0 or seconds > 5:
                             time.sleep(self.config['ocr_interval'])
                 else:
-                    time.sleep(0.95)
+                    time.sleep(self.config['ocr_interval'])
         except Exception as e:
             self.status_updated.emit(f"错误: {str(e)}")
             print(f"脚本运行错误: {e}")
