@@ -296,6 +296,5 @@ if __name__ == "__main__":
 
     regions = selector.select_multiple_regions(["time", "buy", "verify", "refresh", "money"])
     print(f"所有区域: {regions}")
-    
     # 保存配置
     selector.save_regions_to_file("regions_config.json")

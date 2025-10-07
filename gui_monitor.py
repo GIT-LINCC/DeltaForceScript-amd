@@ -36,13 +36,13 @@ class MonitorWindow(QMainWindow):
         self.status = "就绪"
         
         # 配置变量
-        self.buy_click_delay = 0.65  # 购买点击延迟（秒）
-        self.buy_to_verify_delay = 0.1  # 购买到确认的延迟（秒）
-        self.buy_interval = 0.1  # 购买按钮点击间隔（秒）
-        self.verify_interval = 0.1  # 确认按钮点击间隔（秒）
+        self.buy_click_delay = 0.50  # 购买点击延迟（秒）
+        # self.buy_to_verify_delay = 0.0  # 购买到确认的延迟（秒）
+        self.buy_interval = 0.05  # 购买按钮点击间隔（秒）
+        self.verify_interval = 0.05  # 确认按钮点击间隔（秒）
         self.ocr_interval = 0.95  # OCR识别间隔（time >= 5）（秒）
         self.continue_after_complete = True  # 任务完成后继续运行
-        self.click_refresh_at_3s = False  # 3秒时点击刷新按钮
+        self.click_refresh_at_3s = True  # 3秒时点击刷新按钮
         
         self.init_ui()
         
@@ -157,22 +157,22 @@ class MonitorWindow(QMainWindow):
         config_layout.addLayout(delay_layout)
         
         # 购买到确认延迟设置
-        buy_to_verify_layout = QHBoxLayout()
-        buy_to_verify_label = QLabel("确认点击延迟:")
-        buy_to_verify_label.setFont(QFont("微软雅黑", 10))
-        buy_to_verify_label.setFixedWidth(120)
-        self.buy_to_verify_spin = QDoubleSpinBox()
-        self.buy_to_verify_spin.setRange(0.0, 5.0)
-        self.buy_to_verify_spin.setValue(self.buy_to_verify_delay)
-        self.buy_to_verify_spin.setSingleStep(0.1)
-        self.buy_to_verify_spin.setDecimals(2)
-        self.buy_to_verify_spin.setSuffix(" 秒")
-        self.buy_to_verify_spin.setFont(QFont("微软雅黑", 10))
-        self.buy_to_verify_spin.valueChanged.connect(self.on_buy_to_verify_delay_changed)
-        buy_to_verify_layout.addWidget(buy_to_verify_label)
-        buy_to_verify_layout.addWidget(self.buy_to_verify_spin)
-        buy_to_verify_layout.addStretch()
-        config_layout.addLayout(buy_to_verify_layout)
+        # buy_to_verify_layout = QHBoxLayout()
+        # buy_to_verify_label = QLabel("确认点击延迟:")
+        # buy_to_verify_label.setFont(QFont("微软雅黑", 10))
+        # buy_to_verify_label.setFixedWidth(120)
+        # self.buy_to_verify_spin = QDoubleSpinBox()
+        # self.buy_to_verify_spin.setRange(0.0, 5.0)
+        # self.buy_to_verify_spin.setValue(self.buy_to_verify_delay)
+        # self.buy_to_verify_spin.setSingleStep(0.1)
+        # self.buy_to_verify_spin.setDecimals(2)
+        # self.buy_to_verify_spin.setSuffix(" 秒")
+        # self.buy_to_verify_spin.setFont(QFont("微软雅黑", 10))
+        # self.buy_to_verify_spin.valueChanged.connect(self.on_buy_to_verify_delay_changed)
+        # buy_to_verify_layout.addWidget(buy_to_verify_label)
+        # buy_to_verify_layout.addWidget(self.buy_to_verify_spin)
+        # buy_to_verify_layout.addStretch()
+        # config_layout.addLayout(buy_to_verify_layout)
         
         # 购买按钮点击间隔
         buy_interval_layout = QHBoxLayout()
@@ -180,7 +180,7 @@ class MonitorWindow(QMainWindow):
         buy_interval_label.setFont(QFont("微软雅黑", 10))
         buy_interval_label.setFixedWidth(120)
         self.buy_interval_spin = QDoubleSpinBox()
-        self.buy_interval_spin.setRange(0.01, 1.0)
+        self.buy_interval_spin.setRange(0.00, 1.0)
         self.buy_interval_spin.setValue(self.buy_interval)
         self.buy_interval_spin.setSingleStep(0.01)
         self.buy_interval_spin.setDecimals(2)
@@ -198,7 +198,7 @@ class MonitorWindow(QMainWindow):
         verify_interval_label.setFont(QFont("微软雅黑", 10))
         verify_interval_label.setFixedWidth(120)
         self.verify_interval_spin = QDoubleSpinBox()
-        self.verify_interval_spin.setRange(0.01, 1.0)
+        self.verify_interval_spin.setRange(0.00, 1.0)
         self.verify_interval_spin.setValue(self.verify_interval)
         self.verify_interval_spin.setSingleStep(0.01)
         self.verify_interval_spin.setDecimals(2)
@@ -424,10 +424,10 @@ class MonitorWindow(QMainWindow):
         self.buy_click_delay = value
         self.add_log(f"⚙️ 购买点击延迟已设置为: {value}秒")
     
-    def on_buy_to_verify_delay_changed(self, value):
-        """购买到确认延迟变更"""
-        self.buy_to_verify_delay = value
-        self.add_log(f"⚙️ 购买确认间延迟已设置为: {value}秒")
+    # def on_buy_to_verify_delay_changed(self, value):
+    #     """购买到确认延迟变更"""
+    #     self.buy_to_verify_delay = value
+    #     self.add_log(f"⚙️ 购买确认间延迟已设置为: {value}秒")
     
     def on_buy_interval_changed(self, value):
         """购买点击间隔变更"""
@@ -460,7 +460,7 @@ class MonitorWindow(QMainWindow):
         """获取当前配置"""
         return {
             'buy_click_delay': self.buy_click_delay,
-            'buy_to_verify_delay': self.buy_to_verify_delay,
+            # 'buy_to_verify_delay': self.buy_to_verify_delay,
             'buy_interval': self.buy_interval,
             'verify_interval': self.verify_interval,
             'ocr_interval': self.ocr_interval,

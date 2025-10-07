@@ -16,6 +16,8 @@ import time
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QThread, pyqtSignal
 import pydirectinput
+from colormath.color_objects import LabColor
+from colormath.color_diff import delta_e_cie2000
 
 
 def is_admin():
@@ -67,6 +69,7 @@ def click_region_center(region: tuple, clicks=1, interval=0.1):
 def extract_and_merge_digits(s: str) -> str:
     """识别字符串中的所有数字并合并为一个新字符串"""
     return ''.join(re.findall(r'\d', s))
+    
 
 class ScriptThread(QThread):
     """脚本运行线程"""
@@ -91,10 +94,28 @@ class ScriptThread(QThread):
         left, top, right, bottom = region
         return frame[top:bottom, left:right]
 
+    def verified(self) -> bool:
+        """检查确认按钮区域的颜色是否变化"""
+        frame = self.win_cap.capture()
+        if frame is None or frame.size == 0: return False
+        region = self.selector.get_region("verify_check")
+        # 获取区域中心颜色
+        color_tmp = frame[(region[1] + region[3]) // 2, (region[0] + region[2]) // 2]
+        center_color = LabColor(color_tmp[0], color_tmp[1], color_tmp[2])  # BGR to Lab
+        # 预设的确认按钮中心颜色 (BGR)
+        target_color = LabColor(65, 109, 175)  # BGR：适用于金色砖皮
+        # 计算颜色差异
+        delta_e = delta_e_cie2000(center_color, target_color)
+        # 色差小说明确认没有点到
+        if delta_e < 1:  # 阈值可调整
+            return False
+        return True
+
     def ocr_region(self, region):
         """OCR 识别"""
         frame = self.win_cap.capture()
-        while frame is None or frame.size == 0: frame = self.win_cap.capture()
+        # while frame is None or frame.size == 0: frame = self.win_cap.capture()
+        if frame is None or frame.size == 0: return ""
         roi = self.frame_cut(frame, region)
         res = self.ocr.ocr(roi)
         if not res or not res[0]['rec_texts']:
@@ -125,6 +146,7 @@ class ScriptThread(QThread):
                 while self.is_paused: time.sleep(0.2); continue
                 # 截图并OCR识别时间
                 res = self.ocr_region(time_region)
+                if "天" in res or "小时" in res: click_region_center(refresh_region); continue
                 match = pattern.search(res)
                 if match:
                     minutes = int(match.group(1))
@@ -141,24 +163,27 @@ class ScriptThread(QThread):
                         self.status_updated.emit("准备点击...")
                         time.sleep(self.config['buy_click_delay'])
                         # 点击购买按钮
+                        click_region_center(buy_region, interval=0)
+                        time.sleep(self.config['buy_interval'])
+                        click_region_center(buy_region, interval=0)
                         self.status_updated.emit("点击购买按钮...")
-                        click_region_center(buy_region, interval=self.config['buy_interval'])
-                        # 校验点击是否成功
-                        verify = self.ocr_region(verify_region)
-                        while "确认" not in verify:
-                            click_region_center(buy_region, interval=self.config['buy_interval'])
-                            verify = self.ocr_region(verify_region)
+                        # 校验点击是否成功（可能造成延迟）
+                        # verify = self.ocr_region(verify_region)
+                        # while "确认" not in verify:
+                        #     click_region_center(buy_region, interval=self.config['buy_interval'])
+                        #     verify = self.ocr_region(verify_region)
                         # 购买到确认之间的延迟
-                        time.sleep(self.config['buy_to_verify_delay'])
+                        # time.sleep(self.config['buy_to_verify_delay'])
                         # 点击确认按钮
-                        self.status_updated.emit("点击确认按钮...")
                         click_region_center(verify_region, interval=self.config['verify_interval'])
+                        self.status_updated.emit("点击确认按钮...")
                         # 校验点到了确认
-                        verify = self.ocr_region(verify_region)
-                        while "确认" in verify:
+                        verify_counter = 0
+                        while not self.verified():
+                            verify_counter += 1
+                            if verify_counter > 5:
+                                pydirectinput.click(1, 1, interval=0.5)
                             click_region_center(verify_region, interval=self.config['verify_interval'])
-                            verify = self.ocr_region(verify_region)
-                            self.status_updated.emit(f"确认按钮识别结果: {verify}")
 
                         self.status_updated.emit("等待刷新...")
                         time.sleep(1.5)
@@ -202,7 +227,7 @@ def main():
     selector = RegionSelector()
     selector.load_regions_from_file("regions_2k.json")
     
-    win_cap = WindowCapture(max_buffer_len=1)
+    win_cap = WindowCapture(max_buffer_len=3)
     
     # 初始化 OCR
     ocr = PaddleOCR(
@@ -211,6 +236,7 @@ def main():
         use_textline_orientation=False,
         text_detection_model_dir="models/PP-OCRv5_server_det_infer",
         text_recognition_model_dir="models/PP-OCRv5_server_rec_infer",
+        # use_tensorrt=True,
         device='gpu:0'
     )
     window = MonitorWindow()
@@ -225,7 +251,7 @@ def main():
         
         # 获取当前配置
         config = window.get_config()
-        window.add_log(f"配置: 购买延迟={config['buy_click_delay']}秒, 间隔延迟={config['buy_to_verify_delay']}秒")
+        window.add_log(f"配置: 购买延迟={config['buy_click_delay']}秒")
         
         script_thread = ScriptThread(selector, win_cap, ocr, config)
         
