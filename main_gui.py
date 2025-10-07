@@ -101,10 +101,10 @@ class ScriptThread(QThread):
         left, top, right, bottom = region
         return frame[top:bottom, left:right]
 
-    def verified(self) -> bool:
+    def verify_window(self) -> bool:
         """检查确认按钮区域的颜色是否变化"""
         frame = self.win_cap.capture()
-        if frame is None or frame.size == 0: return False
+        while frame is None or frame.size == 0: frame = self.win_cap.capture()
         region = self.selector.get_region("verify_check")
         # 获取区域中心颜色
         color_tmp = frame[((region[1] + region[3]) // 2), ((region[0] + region[2]) // 2)]
@@ -113,10 +113,10 @@ class ScriptThread(QThread):
         target_color = LabColor(65, 109, 175)  # BGR：适用于金色砖皮
         # 计算颜色差异
         delta_e = delta_e_cie2000(center_color, target_color)
-        # 色差小说明确认没有点到
+        # 色差小说明显示了确认窗口
         if delta_e < 1:  # 阈值可调整
-            return False
-        return True
+            return True
+        return False
 
     def ocr_region(self, region):
         """OCR 识别"""
@@ -171,22 +171,15 @@ class ScriptThread(QThread):
                         time.sleep(self.config['buy_click_delay'])
                         # 点击购买按钮
                         click_region_center(buy_region, interval=0)
-                        time.sleep(self.config['buy_interval'])
-                        click_region_center(buy_region, interval=0)
-                        self.status_updated.emit("点击购买按钮...")
                         # 校验点击是否成功（可能造成延迟）
-                        # verify = self.ocr_region(verify_region)
-                        # while "确认" not in verify:
-                        #     click_region_center(buy_region, interval=self.config['buy_interval'])
-                        #     verify = self.ocr_region(verify_region)
-                        # 购买到确认之间的延迟
-                        # time.sleep(self.config['buy_to_verify_delay'])
+                        while not self.verify_window():
+                            click_region_center(buy_region, interval=self.config['buy_interval'])
                         # 点击确认按钮
                         click_region_center(verify_region, interval=self.config['verify_interval'])
                         self.status_updated.emit("点击确认按钮...")
                         # 校验点到了确认
                         verify_counter = 0
-                        while not self.verified():
+                        while self.verify_window():
                             verify_counter += 1
                             if verify_counter > 5:
                                 pydirectinput.click(1, 1, interval=0.5)
