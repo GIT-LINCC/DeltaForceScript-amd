@@ -2,9 +2,9 @@
 
 ## ISSUE的统一回复
 
-- 关于OCR识别的问题
-  我屏幕是2k的，可能需要改一下region_2k.json的数值，按照比例换算一下，您可以问问AI：“文件中提供了2k屏幕下的坐标，1k/4k下的对应坐标如何换算”
+- 关于OCR识别的问题：我屏幕是2k的，可能需要改一下region_2k.json的数值，按照比例换算一下，您可以问问AI：“文件中提供了2k屏幕下的坐标，1k/4k下的对应坐标如何换算”
 - 关于requirement.txt安装paddlepaddle-gpu的问题，参考官方链接：https://www.paddlepaddle.org.cn/install/quick?docurl=/documentation/docs/zh/develop/install
+- 另外问问有没有好用的练枪的软件，我太菜了，打战场天天被当陀螺抽
 
 ## 项目简介
 
