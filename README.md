@@ -5,6 +5,12 @@
 - 关于OCR识别的问题：我屏幕是2k的，可能需要改一下region_2k.json的数值，按照比例换算一下，您可以问问AI：“文件中提供了2k屏幕下的坐标，1k/4k下的对应坐标如何换算”
 - 关于requirement.txt安装paddlepaddle-gpu的问题，参考官方链接：https://www.paddlepaddle.org.cn/install/quick?docurl=/documentation/docs/zh/develop/install
 - 另外问问有没有好用的练枪的软件，我太菜了，大战场天天被当陀螺抽
+- 看到有些兄弟模型下载有问题，我传了一个网盘的版本：
+```
+  通过网盘分享的文件：PP-OCRv5_for_DeltaForceScript
+  链接: https://pan.baidu.com/s/1xUiHcZrw-AS85GxltRCC6g?pwd=dn3q 提取码: dn3q 
+  --来自百度网盘超级会员v6的分享
+```
 
 ## 项目简介
 
@@ -55,7 +61,9 @@ pip install -r requirement.txt
 ## 快速开始（运行步骤）
 
 1. 准备模型：将 `models/PP-OCRv5_server_det_infer` 和 `models/PP-OCRv5_server_rec_infer` 放在 `models/` 目录下。模型地址：
+   
    https://modelscope.cn/models/PaddlePaddle/PP-OCRv5_server_det
+   
    https://modelscope.cn/models/PaddlePaddle/PP-OCRv5_server_rec
 
 3. 运行程序（管理员权限）：
