@@ -25,13 +25,29 @@ DeltaForceScript 是一个基于 PyQt6 的 Windows 自动购买（抢购）辅�
 
 ## 目录结构（主要文件）
 
-- `main_gui.py` - 程序入口，负责初始化 OCR、窗口捕获和启动 GUI
-- `gui_monitor.py` - PyQt6 GUI 界面，包含脚本配置与日志
-- `region_selector.py` - 交互式屏幕区域选择工具（使用 dxcam + OpenCV）
-- `window_capture.py` - 屏幕捕获封装（基于 dxcam）
-- `regions_2k.json` - 示例/保存的区域配置
-- `models/` - PaddleOCR 模型目录（det & rec 推理文件）
-- `requirement.txt` - 依赖列表
+```
+.
+├── gui_monitor.py
+├── main_gui.py
+├── models
+│   ├── PP-OCRv5_server_det_infer
+│   │   ├── inference.json
+│   │   ├── inference.pdiparams
+│   │   └── inference.yml
+│   └── PP-OCRv5_server_rec_infer
+│       ├── inference.json
+│       ├── inference.pdiparams
+│       └── inference.yml
+├── __pycache__
+│   ├── gui_monitor.cpython-312.pyc
+│   ├── region_selector.cpython-312.pyc
+│   └── window_capture.cpython-312.pyc
+├── README.md
+├── regions_2k.json
+├── region_selector.py
+├── requirement.txt
+└── window_capture.py
+```
 
 
 ## 依赖
