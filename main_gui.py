@@ -239,7 +239,8 @@ def main():
     """主函数"""
     app = QApplication(sys.argv)
     selector = RegionSelector()
-    selector.load_regions_from_file("regions_2k.json")
+    # selector.load_regions_from_file("regions_2k.json")
+    selector.load_regions_from_file("regions_config.json")
     win_cap = WindowCapture(max_buffer_len=2)
     
     # 初始化 OCR

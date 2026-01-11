@@ -6,5 +6,5 @@ PyQt6==6.9.1
 PyDirectInput==1.0.4
 colormath==3.0.0
 
-paddleocr==3.2.0
-paddlepaddle-gpu==3.2.0
+paddleocr
+paddlepaddle
