@@ -302,13 +302,26 @@ class ScriptThread(QThread):
             verify_region = self.selector.get_region("verify")
             verify_check = self.selector.get_region("verify_check")
             refresh_region = self.selector.get_region("refresh")
+            l3, t3, r3, b3 = refresh_region
+            cx3, cy3 = (l3 + r3) // 2, (t3 + b3) // 2
             target_bgr = numpy.array([32, 29, 20])
-
+            # 初始化上一次执行的时间
+            last_execution_time = time.time()
+            # 设定间隔时间（秒），5分钟 = 300秒
+            interval = 300
             while self.is_running:
                 if self.is_paused:
                     time.sleep(0.1)
                     continue
+                current_time = time.time()
 
+                # 1. 检查是否到了 5 分钟
+                if current_time - last_execution_time >= interval:
+                    # 在这里放置你的特定代码
+                    win32_hardware_click(cx3, cy3)
+                    self.status_updated.emit("五分钟固定刷新！")
+                    # 更新上一次执行的时间戳
+                    last_execution_time = current_time
                 frame = self.win_cap.capture()
                 if frame is None: continue
 
@@ -348,10 +361,10 @@ class ScriptThread(QThread):
                             time.sleep(0.1)
                             win32_hardware_click(cx2, cy2)
                             win32_hardware_click(cx2, cy2)
+                            time.sleep(0.2)
+                            win32_hardware_click(cx2, cy2)
                             self.status_updated.emit("确认成功")
                             time.sleep(1.0)
-                            l3, t3, r3, b3 = refresh_region
-                            cx3, cy3 = (l3 + r3) // 2, (t3 + b3) // 2
                             win32_hardware_click(cx3, cy3)
 
                 time.sleep(0.001)
